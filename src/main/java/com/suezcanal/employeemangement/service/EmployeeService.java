@@ -11,7 +11,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.suezcanal.employeemangement.dto.DepartmentDTO;
@@ -41,9 +40,8 @@ public class EmployeeService {
         if (employeeRepository.existsByEmail(employeeDTO.getEmail())) {
             throw new DataIntegrityViolationException("Email already exists: " + employeeDTO.getEmail());
         }
-        Department department = departmentRepository.findById(employeeDTO.getDepartment().getId())
-                .orElse(null);
-        Employee employee = convertToEntity(employeeDTO);
+        Department department = departmentRepository.findByName(employeeDTO.getDepartment().getName()).orElseThrow(() -> new EntityNotFoundException("Department not found with name: " + employeeDTO.getDepartment().getName()));
+        Employee employee = convertToNewEntity(employeeDTO);
         employee.setDepartment(department);
         employee = employeeRepository.save(employee);
         return convertToDTO(employee);
@@ -53,13 +51,12 @@ public class EmployeeService {
     public EmployeeDTO updateEmployee(Long id, EmployeeDTO employeeDTO) {
         Employee existingEmployee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + id));
-        if (!existingEmployee.getEmail().equals(employeeDTO.getEmail()) && 
-            employeeRepository.existsByEmail(employeeDTO.getEmail())) {
-            throw new DataIntegrityViolationException("Email already exists: " + employeeDTO.getEmail());
+        if (!employeeRepository.existsByEmail(employeeDTO.getEmail()) || !existingEmployee.getEmail().equals(employeeDTO.getEmail())) {
+            throw new DataIntegrityViolationException("Email can't be updated: " + employeeDTO.getEmail());
         }
-        Department department = departmentRepository.findById(employeeDTO.getDepartment().getId())
+        Department department = departmentRepository.findByName(employeeDTO.getDepartment().getName())
                 .orElseThrow(() -> new EntityNotFoundException("Department not found with id: " + employeeDTO.getDepartment().getId()));
-        existingEmployee = convertToEntity(employeeDTO);
+        existingEmployee = convertToExistingEntity(employeeDTO, existingEmployee);
         existingEmployee.setDepartment(department);
         existingEmployee = employeeRepository.save(existingEmployee);
         return convertToDTO(existingEmployee);
@@ -85,9 +82,14 @@ public class EmployeeService {
         return dto;
     }
 
-    private Employee convertToEntity(EmployeeDTO dto) {
+    private Employee convertToNewEntity(EmployeeDTO dto) {
         Employee employee = new Employee();
-        BeanUtils.copyProperties(dto, employee, "department");
+        BeanUtils.copyProperties(dto, employee, "department", "id");
+        return employee;
+    }
+
+    private Employee convertToExistingEntity(EmployeeDTO dto,Employee employee) {
+        BeanUtils.copyProperties(dto, employee, "department", "id");
         return employee;
     }
 }

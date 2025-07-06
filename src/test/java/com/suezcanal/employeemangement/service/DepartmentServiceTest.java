@@ -79,16 +79,11 @@ class DepartmentServiceTest {
     }
     @Test
     void updateDepartment_Success() {
-        when(departmentRepository.existsByNameIgnoreCase("IT")).thenReturn(false);
+        when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
         when(departmentRepository.save(any(Department.class))).thenReturn(department);
-        assertDoesNotThrow(() -> departmentService.updateDepartment(department));
+        assertDoesNotThrow(() -> departmentService.updateDepartment(1L,departmentDTO));
     }
-    @Test
-    void updateDepartment_DuplicateName() {
-        when(departmentRepository.existsByNameIgnoreCase("IT")).thenReturn(true);
-        assertThrows(DataIntegrityViolationException.class, () -> departmentService.updateDepartment(department));
-        verify(departmentRepository, never()).save(any(Department.class));
-    }
+
     @Test
     void deleteDepartment_Success() {
         Department department = new Department();

@@ -27,6 +27,9 @@ A comprehensive Spring Boot application for managing employees and departments w
 
 ## Entity Relationship Diagram
 
+![image](https://github.com/user-attachments/assets/dff18ebc-eef0-49ac-9927-138d8b9a9c41)
+
+
 ```
 +---------------+       +---------------+       +---------------+
 |    Employee   |       | Department   |       | DailySummary |

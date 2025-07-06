@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import java.util.List;
 
 @Data
@@ -12,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "departments")
+@ToString(exclude = "employees")
 public class Department implements Comparable<Department> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

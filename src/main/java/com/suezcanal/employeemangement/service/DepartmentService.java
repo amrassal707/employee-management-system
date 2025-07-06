@@ -41,12 +41,13 @@ public class DepartmentService {
     }
 
     @Transactional
-    public void updateDepartment(Department department) {
-        log.info("Updating department: {}", department);
-        if(departmentRepository.existsByNameIgnoreCase(department.getName())) {
+    public Department updateDepartment(long id,DepartmentDTO departmentDto) {
+        Department department = departmentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Department not found with id: " + id));
+        if(departmentRepository.findByName(departmentDto.getName()).isPresent()) {
             throw new DataIntegrityViolationException("Department name already exists: " + department.getName());
         }
-        departmentRepository.save(department);
+        department.setName(departmentDto.getName());
+        return departmentRepository.save(department);
     }
 
     private DepartmentDTO toDTO(Department department) {

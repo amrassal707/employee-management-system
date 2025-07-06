@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -38,9 +39,8 @@ public class DepartmentController {
     @PutMapping("/{id}")
     @Operation(summary = "Update a department", description = "Updates a department record for employees")
     public ResponseEntity<DepartmentDTO> updateDepartment(@PathVariable Long id, @Valid @RequestBody DepartmentDTO departmentDTO) {
-        Department department = departmentService.checkDepartmentExists(id);
-        department.setName(departmentDTO.getName());
-        departmentService.updateDepartment(department);
+
+        Department department = departmentService.updateDepartment(id, departmentDTO);
         departmentDTO.setId(department.getId());
         return ResponseEntity.status(HttpStatus.OK).body(departmentDTO);
     }

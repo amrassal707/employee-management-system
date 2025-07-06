@@ -136,17 +136,6 @@ On startup, the system automatically creates:
    - Delete with employee check
    - Department retrieval
 
-3. DepartmentSummaryService Test:
-   - Daily summary generation
-   - Employee count calculation
-   - Timestamp recording
-
-### Integration Tests
-
-Covers the interaction between:
-- Employee and Department entities
-- Security configuration
-- Scheduled tasks
 
 ## Scheduled Tasks
 
